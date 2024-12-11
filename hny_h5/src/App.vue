@@ -1,20 +1,21 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <MainCard></MainCard>
+  <main-view></main-view>
 </template>
 
 <script>
-import MainCard from './components/main-card.vue';
+import MainView from './view/ MainView.vue';
 
 export default {
   name: 'App',
   components: {
-    MainCard
+    'main-view': MainView
   }
 }
 </script>
 
 <style>
+@import "tailwindcss";
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
