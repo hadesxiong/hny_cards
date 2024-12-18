@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.schema.sch_main import *
 from app.api.controller.ctrl_main import *
-from app.utils.security import get_current_guest
+from app.utils.security import get_current_user
 
 # 定义路由
 main_rt = APIRouter(prefix='/main', tags=['main'])
@@ -14,7 +14,7 @@ main_rt = APIRouter(prefix='/main', tags=['main'])
               response_model_exclude_unset=True)
 
 async def createQian(form_data:QianCreate,
-                     current_user: str = Depends(get_current_guest)):
+                     current_user: str = Depends(get_current_user)):
 
     # 清理参数
     fltr_data = {k:v for k,v in form_data.model_dump().items() if v is not None}
@@ -31,7 +31,7 @@ async def createQian(form_data:QianCreate,
               response_model_exclude_unset=True)
 
 async def actionQian(form_data:QianAction,
-                     current_user: str = Depends(get_current_guest)):
+                     current_user: str = Depends(get_current_user)):
     
     # 清理参数
     fltr_data = {k:v for k,v in form_data.model_dump().items() if v is not None}

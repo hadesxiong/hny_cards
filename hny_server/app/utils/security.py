@@ -14,7 +14,7 @@ from app.models.user import *
 from app.core.error import CustomHTTPException
 
 # 注册游客用户
-async def register_guest(guest_model: GuestMain, finger:str):
+async def register_guest(finger:str):
 
     # 查找指纹
     try:
@@ -28,7 +28,7 @@ async def register_guest(guest_model: GuestMain, finger:str):
             'guest_create_dt': datetime.now(timezone(timedelta(hours=8)))
         })
 
-        guest_rslt = await guest_model.create(**guest_data)
+        guest_rslt = await GuestMain.create(**guest_data)
         return guest_rslt.guest_id
 
 # 注册用户信息
@@ -61,16 +61,19 @@ async def register_user(guest_id:str):
         return guest_id
 
 # 查询游客用户
-async def get_guest(guest_model:GuestMain, finger:str):
+async def get_user(finger:str):
 
-    guest_ins = await guest_model.filter(guest_finger=finger)
+    guest_ins = await GuestMain.filter(guest_finger=finger)
 
     if len(guest_ins) == 0:
-        guest_id = await register_guest(guest_model, finger)
-        return guest_id
+        guest_id = await register_guest(finger)
+        user_id = await register_user(guest_id)
     
     else:
-        return guest_ins[0].guest_id
+        user_ins = await UserInfo.filter(guest_id=guest_ins[0].guest_id)
+        user_id = user_ins[0].user_id if len(user_ins) > 0 else register_user(guest_id)
+
+    return user_id
     
 # 创建token
 def create_token(data:dict, expires_delta: timedelta | None = None):
@@ -95,7 +98,7 @@ def create_token(data:dict, expires_delta: timedelta | None = None):
 # 获取当前游客
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
-async def get_current_guest(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
     try:
         payload = jwt.decode(
@@ -104,9 +107,9 @@ async def get_current_guest(token: Annotated[str, Depends(oauth2_scheme)]):
             algorithms= [settings.ALGORITHM]
         )
         print(payload)
-        guest_id: str = payload.get('guest')
+        user_id: str = payload.get('id')
 
-        if not guest_id:
+        if not user_id:
             raise CustomHTTPException(
                 status_code = status.HTTP_401_UNAUTHORIZED,
                 detail = '用户验证失败',
@@ -114,8 +117,8 @@ async def get_current_guest(token: Annotated[str, Depends(oauth2_scheme)]):
             )
         
         try:
-            guest_ins = await GuestMain.get(guest_id=guest_id)
-            return guest_ins.guest_id
+            user_ins = await UserInfo.get(usr_id=user_id)
+            return user_ins.usr_id
         
         except:
             raise CustomHTTPException(
