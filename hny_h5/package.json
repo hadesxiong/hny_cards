@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.0-beta.6",
+    "axios": "^1.7.9",
     "core-js": "^3.8.3",
+    "crypto-js": "^4.2.0",
     "tailwindcss": "^4.0.0-beta.6",
     "vue": "^3.2.13"
   },
