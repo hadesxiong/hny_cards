@@ -50,7 +50,8 @@ export default defineComponent({
             const container = card_main.value;
             container.style.transform = flip_state.value ? 'scale(1)' : 'rotateY(180deg) scale(2)';
             const con_big = card_con.value;
-            moveToCenter(con_big, flip_state.value)
+            moveToCenter(con_big, flip_state.value);
+            
             nextTick().then(()=>{
                 flip_state.value = !flip_state.value
             })
